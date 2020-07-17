@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Squeaker.Application.Migrations
 {
@@ -12,7 +13,7 @@ namespace Squeaker.Application.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Text = table.Column<string>(nullable: true),
-                    CreatedAt = table.Column<string>(nullable: true)
+                    CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {

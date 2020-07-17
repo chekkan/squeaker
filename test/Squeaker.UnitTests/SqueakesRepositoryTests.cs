@@ -65,7 +65,7 @@ namespace Squeaker.UnitTests
             var result = await this.sut.FindAll(3, page);
 
             Assert.Equal(3, result.Length);
-            Assert.Equal(squeakes[(page - 1) * 3 ].Id, result[0].Id);
+            Assert.Equal(squeakes[(page - 1) * 3].Id, result[0].Id);
         }
 
         private static Squeake[] GenerateSqueakes(int count)
