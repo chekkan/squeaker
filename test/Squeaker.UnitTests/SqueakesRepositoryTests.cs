@@ -9,7 +9,8 @@ namespace Squeaker.UnitTests
 {
     public class SqueakesRepositoryTests : IDisposable
     {
-        private SqueakerContext dbContext;
+        private readonly SqueakerContext dbContext;
+        private readonly SqueakesRepository sut;
 
         public SqueakesRepositoryTests()
         {
@@ -22,6 +23,8 @@ namespace Squeaker.UnitTests
 
             this.dbContext.Database.EnsureDeleted();
             this.dbContext.Database.EnsureCreated();
+
+            this.sut = new SqueakesRepository(this.dbContext);
         }
 
         [Fact]
@@ -31,8 +34,7 @@ namespace Squeaker.UnitTests
             this.dbContext.Squeakes.AddRange(squeakes);
             this.dbContext.SaveChanges();
 
-            var sut = new SqueakesRepository(this.dbContext);
-            var result = await sut.FindAll();
+            var result = await this.sut.FindAll();
 
             Assert.Equal(3, result.Length);
             Assert.Equal(squeakes[0].Id, result[0].Id);
@@ -46,11 +48,24 @@ namespace Squeaker.UnitTests
             var squeakes = GenerateSqueakes(limit + 3);
             this.dbContext.Squeakes.AddRange(squeakes);
             this.dbContext.SaveChanges();
-            var sut = new SqueakesRepository(this.dbContext);
 
-            var result = await sut.FindAll(limit);
+            var result = await this.sut.FindAll(limit);
 
             Assert.Equal(limit, result.Length);
+        }
+
+        [Theory]
+        [InlineData(2)]
+        public async Task CanPageItems(int page)
+        {
+            var squeakes = GenerateSqueakes(3 * page + 3);
+            this.dbContext.Squeakes.AddRange(squeakes);
+            this.dbContext.SaveChanges();
+
+            var result = await this.sut.FindAll(3, page);
+
+            Assert.Equal(3, result.Length);
+            Assert.Equal(squeakes[(page - 1) * 3 ].Id, result[0].Id);
         }
 
         private static Squeake[] GenerateSqueakes(int count)
