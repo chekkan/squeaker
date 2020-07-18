@@ -1,5 +1,10 @@
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Squeaker.Api;
 using TechTalk.SpecFlow;
+using Xunit;
 
 namespace Squeaker.AcceptanceTests.StepDefinitions
 {
@@ -7,28 +12,34 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
     public class GetSqueakesSteps
     {
         private readonly ScenarioContext scenarioContext;
+        private readonly WebApplicationFactory<Startup> webAppFactory;
+        private HttpResponseMessage response;
 
         public GetSqueakesSteps(ScenarioContext scenarioContext)
         {
             this.scenarioContext = scenarioContext;
+            this.webAppFactory = new WebApplicationFactory<Startup>();
         }
 
         [Given(@"the following squeakes")]
         public void GivenTheFollowingSqueakes(Table table)
         {
-            this.scenarioContext.Pending();
+            // this.scenarioContext.Pending();
         }
 
         [When(@"I GET (.*)")]
-        public void WhenIRequestPath(string path)
+        public async Task WhenIRequestPath(string path)
         {
-            this.scenarioContext.Pending();
+            var client = this.webAppFactory.CreateClient();
+
+            // Act
+            this.response = await client.GetAsync(path);
         }
 
         [Then(@"the response status should be (.*)")]
         public void ThenTheResponseStatusShouldBe(int statusCode)
         {
-            this.scenarioContext.Pending();
+            Assert.Equal(statusCode, (int)response.StatusCode);
         }
 
         [Then(@"the response body should be valid according to openapi description GetSqueakesListResponse in file \./src/Squeaker\.Api/www/squeaker-swagger-spec\.json")]
