@@ -14,7 +14,7 @@ namespace Squeaker.AcceptanceTests
         {
             builder.ConfigureServices(services =>
             {
-                // Remove the app's ApplicationDbContext registration.
+                // Remove the app's SqueakerContext registration.
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType ==
                         typeof(DbContextOptions<SqueakerContext>));
@@ -30,7 +30,6 @@ namespace Squeaker.AcceptanceTests
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
                 });
 
-                // Build the service provider.
                 var sp = services.BuildServiceProvider();
 
                 // Create a scope to obtain a reference to the database

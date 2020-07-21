@@ -16,7 +16,7 @@ namespace Squeaker.Api.Controllers
             this.useCase = useCase;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var squeakes = await this.useCase.FindAll(10, 1);
