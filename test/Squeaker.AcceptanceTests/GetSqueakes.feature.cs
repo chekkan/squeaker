@@ -128,14 +128,14 @@ this.ScenarioInitialize(scenarioInfo);
 this.FeatureBackground();
 #line hidden
 #line 13
-    testRunner.When("I GET /v1/squeakes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.When("I GET /api/v1/squeakes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 14
     testRunner.Then("the response status should be 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 15
-    testRunner.And("the response body should be valid according to openapi description GetSqueakesLis" +
-                        "tResponse in file ./src/Squeaker.Api/www/squeaker-swagger-spec.json", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("response body should be valid according to schema file ./wwwroot/list-squeaker-sc" +
+                        "hema.json", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 16
     testRunner.And("response header X-Total-Count should be 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");

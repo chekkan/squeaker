@@ -10,7 +10,7 @@ Background:
         | Nam a sapien.                   |
 
 Scenario: Can request a list of squeakes
-    When I GET /v1/squeakes
+    When I GET /api/v1/squeakes
     Then the response status should be 200
-    And the response body should be valid according to openapi description GetSqueakesListResponse in file ./src/Squeaker.Api/www/squeaker-swagger-spec.json
+    And response body should be valid according to schema file ./wwwroot/list-squeaker-schema.json
     And response header X-Total-Count should be 3

@@ -28,6 +28,12 @@ namespace Squeaker.UnitTests
         }
 
         [Fact]
+        public void ImplementsListSqueakesUseCase()
+        {
+            Assert.IsAssignableFrom<ListSqueakesUseCase>(this.sut);
+        }
+
+        [Fact]
         public async Task CanReturnSqueakes()
         {
             var squeakes = GenerateSqueakes(3);

@@ -1,10 +1,16 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using Squeaker.Api;
+using Squeaker.Application;
 using TechTalk.SpecFlow;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace Squeaker.AcceptanceTests.StepDefinitions
 {
@@ -12,28 +18,51 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
     public class GetSqueakesSteps
     {
         private readonly ScenarioContext scenarioContext;
-        private readonly WebApplicationFactory<Startup> webAppFactory;
+        private readonly CustomWebApplicationFactory<Startup> webAppFactory;
+        private HttpClient client;
         private HttpResponseMessage response;
 
         public GetSqueakesSteps(ScenarioContext scenarioContext)
         {
             this.scenarioContext = scenarioContext;
-            this.webAppFactory = new WebApplicationFactory<Startup>();
+            this.webAppFactory = new CustomWebApplicationFactory<Startup>();
         }
 
         [Given(@"the following squeakes")]
         public void GivenTheFollowingSqueakes(Table table)
         {
-            // this.scenarioContext.Pending();
+            this.client = this.webAppFactory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    var serviceProvider = services.BuildServiceProvider();
+
+                    using (var scope = serviceProvider.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var db = scopedServices
+                            .GetRequiredService<SqueakerContext>();
+                        db.Squeakes.Add(new Squeake
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Text = table.Header.FirstOrDefault()
+                        });
+                        db.Squeakes.AddRange(table.Rows.Select(row => new Squeake
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Text = row[0]
+                        }));
+                        db.SaveChanges();
+                    }
+                });
+            }).CreateClient();
         }
 
         [When(@"I GET (.*)")]
         public async Task WhenIRequestPath(string path)
         {
-            var client = this.webAppFactory.CreateClient();
-
             // Act
-            this.response = await client.GetAsync(path);
+            this.response = await this.client.GetAsync(path);
         }
 
         [Then(@"the response status should be (.*)")]
@@ -42,16 +71,31 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
             Assert.Equal(statusCode, (int)response.StatusCode);
         }
 
-        [Then(@"the response body should be valid according to openapi description GetSqueakesListResponse in file \./src/Squeaker\.Api/www/squeaker-swagger-spec\.json")]
-        public void ThenTheRespBodyShouldBeValidAccordingToOpenapiDescriptionInFile()
+        [Then(@"response body should be valid according to schema file (.*)")]
+        public async Task ThenResponseBodyShouldBeValidAccordingToSchemaFile(
+                                                             string filepath)
         {
-            this.scenarioContext.Pending();
+            string schemaContent;
+            using (var streamReader = new StreamReader(filepath))
+            {
+                schemaContent = await streamReader.ReadToEndAsync();
+            }
+            JSchema schema = JSchema.Parse(schemaContent);
+
+            var body = await this.response.Content.ReadAsStringAsync();
+
+            JArray json = JArray.Parse(body);
+
+            bool isValid = json.IsValid(schema);
+            Assert.True(isValid, "doesn't match schema");
         }
 
         [Then(@"response header X-Total-Count should be (.*)")]
-        public void ThenResponseHeaderX_Total_CountShouldBe(int p0)
+        public void ThenResponseHeaderX_Total_CountShouldBe(string value)
         {
-            this.scenarioContext.Pending();
+            var totalCount = response.Headers.GetValues("X-Total-Count")
+                .FirstOrDefault();
+            Assert.Equal(value, totalCount);
         }
     }
 }

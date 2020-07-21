@@ -1,0 +1,24 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "id": {
+                "type": "string",
+                "format": "uuid"
+            },
+            "text": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "string",
+                "format": "date-time"
+            }
+        },
+        "required": [
+            "text",
+            "createdAt"
+        ]
+    }
+}

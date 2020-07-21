@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Squeaker.Application
 {
-    public class SqueakesRepository
+    public class SqueakesRepository : ListSqueakesUseCase
     {
         private readonly SqueakerContext dbContext;
 

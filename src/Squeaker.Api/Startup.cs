@@ -17,6 +17,8 @@ namespace Squeaker.Api
         {
             services.AddDbContext<SqueakerContext>(options =>
                         options.UseSqlite("Filename=squeaker.db"));
+            services.AddControllers();
+            services.AddTransient<ListSqueakesUseCase, SqueakesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the
@@ -32,10 +34,7 @@ namespace Squeaker.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllers();
             });
         }
     }
