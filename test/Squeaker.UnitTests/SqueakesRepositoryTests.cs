@@ -40,7 +40,7 @@ namespace Squeaker.UnitTests
             this.dbContext.Squeakes.AddRange(squeakes);
             this.dbContext.SaveChanges();
 
-            var result = await this.sut.FindAll();
+            var (result, _) = await this.sut.FindAll();
 
             Assert.Equal(3, result.Length);
             Assert.Equal(squeakes[0].Id, result[0].Id);
@@ -55,22 +55,23 @@ namespace Squeaker.UnitTests
             this.dbContext.Squeakes.AddRange(squeakes);
             this.dbContext.SaveChanges();
 
-            var result = await this.sut.FindAll(limit);
+            var (result, _) = await this.sut.FindAll(limit);
 
             Assert.Equal(limit, result.Length);
         }
 
         [Theory]
         [InlineData(2)]
+        [InlineData(3)]
         public async Task CanPageItems(int page)
         {
             var squeakes = GenerateSqueakes(3 * page + 3);
             this.dbContext.Squeakes.AddRange(squeakes);
             this.dbContext.SaveChanges();
 
-            var result = await this.sut.FindAll(3, page);
+            var (result, count) = await this.sut.FindAll(3, page);
 
-            Assert.Equal(3, result.Length);
+            Assert.Equal(squeakes.Length, count);
             Assert.Equal(squeakes[(page - 1) * 3].Id, result[0].Id);
         }
 

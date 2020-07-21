@@ -33,7 +33,7 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
         {
             this.client = this.webAppFactory.WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
+                builder.ConfigureServices(async services =>
                 {
                     var serviceProvider = services.BuildServiceProvider();
 
@@ -42,17 +42,25 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
                         var scopedServices = scope.ServiceProvider;
                         var db = scopedServices
                             .GetRequiredService<SqueakerContext>();
+
+                        // empty the squeakes table
+                        db.Squeakes.RemoveRange(db.Squeakes);
+
+                        // add header as an entry
                         db.Squeakes.Add(new Squeake
                         {
                             Id = Guid.NewGuid().ToString(),
                             Text = table.Header.FirstOrDefault()
                         });
+
+                        // add remaining rows
                         db.Squeakes.AddRange(table.Rows.Select(row => new Squeake
                         {
                             Id = Guid.NewGuid().ToString(),
                             Text = row[0]
                         }));
-                        db.SaveChanges();
+
+                        await db.SaveChangesAsync();
                     }
                 });
             }).CreateClient();
@@ -69,6 +77,15 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
         public void ThenTheResponseStatusShouldBe(int statusCode)
         {
             Assert.Equal(statusCode, (int)response.StatusCode);
+        }
+
+        [Then(@"response body path (.*) should be (.*)")]
+        public async Task ThenResponseBodyPathShouldBe(string path, string value)
+        {
+            var body = await this.response.Content.ReadAsStringAsync();
+            JArray array = JArray.Parse(body);
+            JToken token = array.SelectToken(path);
+            Assert.Equal(value, token.ToObject<string>());
         }
 
         [Then(@"response body should be valid according to schema file (.*)")]

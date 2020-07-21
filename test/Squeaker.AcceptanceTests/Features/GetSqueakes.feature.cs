@@ -83,9 +83,9 @@ namespace Squeaker.AcceptanceTests.Features
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Cum sociis natoque penatibus et"});
             table1.AddRow(new string[] {
-                        "Praesent augue Sed bibendum."});
+                        "Nam a sapien"});
             table1.AddRow(new string[] {
-                        "Nam a sapien."});
+                        "Praesent augue Sed bibendum."});
 #line 7
     testRunner.Given("the following squeakes", ((string)(null)), table1, "Given ");
 #line hidden
@@ -139,6 +139,53 @@ this.FeatureBackground();
 #line hidden
 #line 16
     testRunner.And("response header X-Total-Count should be 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Can paginate list of squeakes")]
+        [Xunit.TraitAttribute("FeatureTitle", "Get List of Squeakes")]
+        [Xunit.TraitAttribute("Description", "Can paginate list of squeakes")]
+        public virtual void CanPaginateListOfSqueakes()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Can paginate list of squeakes", null, tagsOfScenario, argumentsOfScenario);
+#line 18
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 6
+this.FeatureBackground();
+#line hidden
+#line 19
+   testRunner.When("I GET /api/v1/squeakes?_page=2&_limit=1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 20
+   testRunner.Then("the response status should be 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 21
+   testRunner.And("response body path $[0].text should be Nam a sapien", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 22
+   testRunner.And("response header X-Total-Count should be 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

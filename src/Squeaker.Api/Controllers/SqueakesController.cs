@@ -17,10 +17,12 @@ namespace Squeaker.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(
+            [FromQuery(Name = "_limit")] int limit = 10,
+            [FromQuery(Name = "_page")] int page = 1)
         {
-            var squeakes = await this.useCase.FindAll(10, 1);
-            this.Response.Headers.Add("X-Total-Count", $"{squeakes.Length}");
+            var (squeakes, count) = await this.useCase.FindAll(limit, page);
+            this.Response.Headers.Add("X-Total-Count", $"{count}");
             return Ok(squeakes);
         }
     }
