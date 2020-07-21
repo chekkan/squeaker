@@ -1,3 +1,6 @@
+init:
+	git config core.hooksPath .githooks
+
 test-all: test-u test-a
 
 test-u:
