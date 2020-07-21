@@ -12,75 +12,119 @@ namespace Squeaker.Api.UnitTests
 {
     public class SqueakesControllerTests
     {
-        private Mock<ListSqueakesUseCase> useCaseMock;
-        private SqueakesController sut;
-
-        public SqueakesControllerTests()
-        {
-            this.useCaseMock = new Mock<ListSqueakesUseCase>();
-            this.sut = new SqueakesController(useCaseMock.Object)
-            {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = new DefaultHttpContext()
-                }
-            };
-        }
-
         [Fact]
         public void ImplementsControllerBase()
         {
-            Assert.IsAssignableFrom<ControllerBase>(this.sut);
+            var listUseCase = new Mock<ListSqueakesUseCase>().Object;
+            var byIdUseCase = new Mock<SqueakeByIdUseCase>().Object;
+            var sut = new SqueakesController(listUseCase, byIdUseCase);
+            Assert.IsAssignableFrom<ControllerBase>(sut);
         }
 
-        [Fact]
-        public async Task GetReturnsSqueakersFromRepository()
+        public class Get
         {
-            var expected = GenerateSqueakes(3);
-            this.useCaseMock
-                .Setup(repo => repo.FindAll(10, 1))
-                .ReturnsAsync((expected, 3));
+            private readonly Mock<ListSqueakesUseCase> useCaseMock;
+            private readonly SqueakesController sut;
 
-            var result = await this.sut.Get();
+            public Get()
+            {
+                this.useCaseMock = new Mock<ListSqueakesUseCase>();
+                var byIdUseCase = new Mock<SqueakeByIdUseCase>().Object;
 
-            var scResult = Assert.IsAssignableFrom<OkObjectResult>(result);
-            Assert.Equal(200, scResult.StatusCode);
-            var okValue = Assert.IsAssignableFrom<Squeake[]>(scResult.Value);
-            Assert.Same(expected, okValue);
+                this.sut = new SqueakesController(this.useCaseMock.Object, byIdUseCase)
+                {
+                    ControllerContext = new ControllerContext
+                    {
+                        HttpContext = new DefaultHttpContext()
+                    }
+                };
+            }
+
+            [Fact]
+            public async Task GetReturnsSqueakersFromRepository()
+            {
+                var expected = GenerateSqueakes(3);
+                this.useCaseMock
+                    .Setup(repo => repo.FindAll(10, 1))
+                    .ReturnsAsync((expected, 3));
+
+                var result = await this.sut.Get();
+
+                var scResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+                Assert.Equal(200, scResult.StatusCode);
+                var okValue = Assert.IsAssignableFrom<Squeake[]>(scResult.Value);
+                Assert.Same(expected, okValue);
+            }
+
+            [Theory]
+            [InlineData(3)]
+            [InlineData(4)]
+            public async Task GetReturnsTotalCountResponseHeader(int count)
+            {
+                var squeakes = GenerateSqueakes(count);
+                this.useCaseMock
+                    .Setup(uc => uc.FindAll(10, 1))
+                    .ReturnsAsync((squeakes, count));
+
+                await this.sut.Get();
+
+                Assert.Equal($"{count}", this.sut.Response.Headers["X-Total-Count"]);
+            }
+
+            [Fact]
+            public async Task GetReturnsPaginatedItems()
+            {
+                var squeakes = GenerateSqueakes(3);
+                this.useCaseMock
+                    .Setup(uc => uc.FindAll(1, 2))
+                    .ReturnsAsync((squeakes, 11));
+
+                var result = await this.sut.Get(1, 2);
+
+                var okResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+                var okValue = Assert.IsAssignableFrom<Squeake[]>(okResult.Value);
+                Assert.Equal(squeakes[0].Id, okValue[0].Id);
+                Assert.Equal("11", this.sut.Response.Headers["X-Total-Count"]);
+            }
         }
 
-        [Theory]
-        [InlineData(3)]
-        [InlineData(4)]
-        public async Task GetReturnsTotalCountResponseHeader(int count)
+        public class GetById
         {
-            var squeakes = GenerateSqueakes(count);
-            this.useCaseMock
-                .Setup(uc => uc.FindAll(10, 1))
-                .ReturnsAsync((squeakes, count));
+            private readonly Mock<SqueakeByIdUseCase> byIdUseCaseMock;
+            private readonly SqueakesController sut;
 
-            await this.sut.Get();
+            public GetById()
+            {
+                var listUseCase = new Mock<ListSqueakesUseCase>().Object;
+                this.byIdUseCaseMock = new Mock<SqueakeByIdUseCase>();
 
-            Assert.Equal($"{count}", this.sut.Response.Headers["X-Total-Count"]);
+                this.sut = new SqueakesController(listUseCase,
+                                                  this.byIdUseCaseMock.Object)
+                {
+                    ControllerContext = new ControllerContext
+                    {
+                        HttpContext = new DefaultHttpContext()
+                    }
+                };
+            }
+
+            [Fact]
+            public async Task ReturnsOk()
+            {
+                var squeake = GenerateSqueakes(1).Single();
+
+                this.byIdUseCaseMock.Setup(uc => uc.FindById(squeake.Id))
+                    .ReturnsAsync(squeake);
+
+                var result = await this.sut.GetById(squeake.Id);
+
+                var okResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+                var okValue = Assert.IsAssignableFrom<Squeake>(okResult.Value);
+                Assert.Equal(squeake.Id, okValue.Id);
+            }
         }
 
-        [Fact]
-        public async Task GetReturnsPaginatedItems()
-        {
-            var squeakes = GenerateSqueakes(3);
-            this.useCaseMock
-                .Setup(uc => uc.FindAll(1, 2))
-                .ReturnsAsync((squeakes, 11));
-
-            var result = await this.sut.Get(1, 2);
-
-            var okResult = Assert.IsAssignableFrom<OkObjectResult>(result);
-            var okValue = Assert.IsAssignableFrom<Squeake[]>(okResult.Value);
-            Assert.Equal(squeakes[0].Id, okValue[0].Id);
-            Assert.Equal("11", this.sut.Response.Headers["X-Total-Count"]);
-        }
-
-        private Squeake[] GenerateSqueakes(int count)
+        private static Squeake[] GenerateSqueakes(int count)
         {
             return Enumerable.Range(1, count)
                 .Select(_ => new Squeake { Id = Guid.NewGuid().ToString() })

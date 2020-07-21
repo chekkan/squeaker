@@ -16,7 +16,8 @@
     <ProjectReference Include="..\Squeaker.Application\Squeaker.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="wwwroot\list-squeaker-schema.json" CopyToOutputDirectory="Always" />
+    <None Include="wwwroot\list-squeakes-schema.json" CopyToOutputDirectory="Always" />
+    <None Include="wwwroot\squeake-detail-schema.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

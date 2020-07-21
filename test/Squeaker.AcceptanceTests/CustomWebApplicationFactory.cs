@@ -38,9 +38,36 @@ namespace Squeaker.AcceptanceTests
                 {
                     var scopedServices = scope.ServiceProvider;
                     var db = scopedServices.GetRequiredService<SqueakerContext>();
+                    db.Database.EnsureDeleted();
                     db.Database.EnsureCreated();
+                    SeedData(db);
                 }
             });
+        }
+
+        private void SeedData(SqueakerContext dbContext)
+        {
+            dbContext.Squeakes.RemoveRange(dbContext.Squeakes);
+            dbContext.SaveChanges();
+            dbContext.Squeakes.AddRange(new []
+            {
+                new Squeake
+                {
+                    Id = "39700594",
+                    Text = "Cum sociis natoque penatibus et"
+                },
+                new Squeake
+                {
+                    Id = "ea90b094",
+                    Text = "Nam a sapien"
+                },
+                new Squeake
+                {
+                    Id = "1028bde8",
+                    Text = "Praesent augue Sed bibendum."
+                }
+            });
+            dbContext.SaveChanges();
         }
     }
 }

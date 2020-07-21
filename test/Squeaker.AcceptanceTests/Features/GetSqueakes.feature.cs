@@ -80,14 +80,20 @@ namespace Squeaker.AcceptanceTests.Features
         {
 #line 6
 #line hidden
-            TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "ID",
+                        "Text"});
+            table2.AddRow(new string[] {
+                        "39700594",
                         "Cum sociis natoque penatibus et"});
-            table1.AddRow(new string[] {
+            table2.AddRow(new string[] {
+                        "ea90b094",
                         "Nam a sapien"});
-            table1.AddRow(new string[] {
+            table2.AddRow(new string[] {
+                        "1028bde8",
                         "Praesent augue Sed bibendum."});
 #line 7
-    testRunner.Given("the following squeakes", ((string)(null)), table1, "Given ");
+    testRunner.Given("the following squeakes", ((string)(null)), table2, "Given ");
 #line hidden
         }
         
@@ -104,7 +110,7 @@ namespace Squeaker.AcceptanceTests.Features
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Can request a list of squeakes", null, tagsOfScenario, argumentsOfScenario);
-#line 12
+#line 13
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -127,17 +133,17 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 13
+#line 14
     testRunner.When("I GET /api/v1/squeakes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 14
+#line 15
     testRunner.Then("the response status should be 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 15
-    testRunner.And("response body should be valid according to schema file ./wwwroot/list-squeaker-sc" +
+#line 16
+    testRunner.And("response body should be valid according to schema file ./wwwroot/list-squeakes-sc" +
                         "hema.json", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 16
+#line 17
     testRunner.And("response header X-Total-Count should be 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -152,7 +158,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Can paginate list of squeakes", null, tagsOfScenario, argumentsOfScenario);
-#line 18
+#line 19
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -175,16 +181,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 19
+#line 20
    testRunner.When("I GET /api/v1/squeakes?_page=2&_limit=1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 20
+#line 21
    testRunner.Then("the response status should be 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 21
+#line 22
    testRunner.And("response body path $[0].text should be Nam a sapien", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 22
+#line 23
    testRunner.And("response header X-Total-Count should be 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }

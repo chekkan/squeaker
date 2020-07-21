@@ -19,6 +19,7 @@ namespace Squeaker.Api
                         options.UseSqlite("Filename=squeaker.db"));
             services.AddControllers();
             services.AddTransient<ListSqueakesUseCase, SqueakesRepository>();
+            services.AddTransient<SqueakeByIdUseCase, SqueakesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the

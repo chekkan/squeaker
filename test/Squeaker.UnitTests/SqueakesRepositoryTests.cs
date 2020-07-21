@@ -34,6 +34,12 @@ namespace Squeaker.UnitTests
         }
 
         [Fact]
+        public void ImplementsSqueakeByIdUseCase()
+        {
+            Assert.IsAssignableFrom<SqueakeByIdUseCase>(this.sut);
+        }
+
+        [Fact]
         public async Task CanReturnSqueakes()
         {
             var squeakes = GenerateSqueakes(3);
@@ -73,6 +79,18 @@ namespace Squeaker.UnitTests
 
             Assert.Equal(squeakes.Length, count);
             Assert.Equal(squeakes[(page - 1) * 3].Id, result[0].Id);
+        }
+
+        [Fact]
+        public async Task GetById()
+        {
+            var squeake = GenerateSqueakes(1).Single();
+            this.dbContext.Squeakes.Add(squeake);
+            this.dbContext.SaveChanges();
+
+            var actual = await this.sut.FindById(squeake.Id);
+
+            Assert.Equal(squeake.Id, actual.Id);
         }
 
         private static Squeake[] GenerateSqueakes(int count)

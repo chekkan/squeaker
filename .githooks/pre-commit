@@ -46,14 +46,14 @@ EOF
 fi
 
 # If there are whitespace errors, print the offending file names and fail.
-exec git diff-index --check --cached $against --
+# exec git diff-index --check --cached $against --
 
 # Select files to format
 FILES=$(git diff --cached --name-only --diff-filter=ACM "*.cs" | sed 's| |\\ |g')
 [ -z "$FILES" ] && exit 0
 
 # Format all selected files
-echo "$FILES" | cat | xargs | sed -e 's/ /,/g' | xargs dotnet-format --files
+echo "$FILES" | cat | xargs | sed -e 's/ /,/g' | xargs dotnet-format --verbosity quiet --files
 
 # Add back the modified files to staging
 echo "$FILES" | xargs git add

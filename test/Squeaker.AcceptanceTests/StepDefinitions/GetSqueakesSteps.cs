@@ -18,58 +18,26 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
     public class GetSqueakesSteps
     {
         private readonly ScenarioContext scenarioContext;
-        private readonly CustomWebApplicationFactory<Startup> webAppFactory;
-        private HttpClient client;
+        private static HttpClient client = SetupClient();
         private HttpResponseMessage response;
 
         public GetSqueakesSteps(ScenarioContext scenarioContext)
         {
             this.scenarioContext = scenarioContext;
-            this.webAppFactory = new CustomWebApplicationFactory<Startup>();
         }
+
+        public static HttpClient SetupClient()
+            => new CustomWebApplicationFactory<Startup>().CreateClient();
 
         [Given(@"the following squeakes")]
         public void GivenTheFollowingSqueakes(Table table)
         {
-            this.client = this.webAppFactory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(async services =>
-                {
-                    var serviceProvider = services.BuildServiceProvider();
-
-                    using (var scope = serviceProvider.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-                        var db = scopedServices
-                            .GetRequiredService<SqueakerContext>();
-
-                        // empty the squeakes table
-                        db.Squeakes.RemoveRange(db.Squeakes);
-
-                        // add header as an entry
-                        db.Squeakes.Add(new Squeake
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Text = table.Header.FirstOrDefault()
-                        });
-
-                        // add remaining rows
-                        db.Squeakes.AddRange(table.Rows.Select(row => new Squeake
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Text = row[0]
-                        }));
-
-                        await db.SaveChangesAsync();
-                    }
-                });
-            }).CreateClient();
         }
 
         [When(@"I GET (.*)")]
         public async Task WhenIRequestPath(string path)
         {
-            this.response = await this.client.GetAsync(path);
+            this.response = await client.GetAsync(path);
         }
 
         [Then(@"the response status should be (.*)")]
@@ -82,8 +50,8 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
         public async Task ThenResponseBodyPathShouldBe(string path, string value)
         {
             var body = await this.response.Content.ReadAsStringAsync();
-            JArray array = JArray.Parse(body);
-            JToken token = array.SelectToken(path);
+            JToken parsed = JToken.Parse(body);
+            JToken token = parsed.SelectToken(path);
             Assert.Equal(value, token.ToObject<string>());
         }
 
@@ -100,7 +68,7 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
 
             var body = await this.response.Content.ReadAsStringAsync();
 
-            JArray json = JArray.Parse(body);
+            JToken json = JToken.Parse(body);
 
             bool isValid = json.IsValid(schema);
             Assert.True(isValid, "doesn't match schema");

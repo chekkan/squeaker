@@ -9,11 +9,14 @@ namespace Squeaker.Api.Controllers
     [ApiController]
     public class SqueakesController : ControllerBase
     {
-        private readonly ListSqueakesUseCase useCase;
+        private readonly ListSqueakesUseCase listUseCase;
+        private readonly SqueakeByIdUseCase byIdUseCase;
 
-        public SqueakesController(ListSqueakesUseCase useCase)
+        public SqueakesController(ListSqueakesUseCase listUseCase,
+                                  SqueakeByIdUseCase byIdUseCase)
         {
-            this.useCase = useCase;
+            this.listUseCase = listUseCase;
+            this.byIdUseCase = byIdUseCase;
         }
 
         [HttpGet]
@@ -21,9 +24,16 @@ namespace Squeaker.Api.Controllers
             [FromQuery(Name = "_limit")] int limit = 10,
             [FromQuery(Name = "_page")] int page = 1)
         {
-            var (squeakes, count) = await this.useCase.FindAll(limit, page);
+            var (squeakes, count) = await this.listUseCase.FindAll(limit, page);
             this.Response.Headers.Add("X-Total-Count", $"{count}");
             return Ok(squeakes);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var squeake = await this.byIdUseCase.FindById(id);
+            return Ok(squeake);
         }
     }
 }

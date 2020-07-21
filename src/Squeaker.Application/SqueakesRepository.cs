@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Squeaker.Application
 {
-    public class SqueakesRepository : ListSqueakesUseCase
+    public class SqueakesRepository : ListSqueakesUseCase, SqueakeByIdUseCase
     {
         private readonly SqueakerContext dbContext;
 
@@ -25,6 +25,9 @@ namespace Squeaker.Application
 
             return (items.ToArray(), totalCount);
         }
+
+        public Task<Squeake> FindById(string id)
+            => this.dbContext.Squeakes.FirstAsync(s => s.Id == id);
 
         private static int GetOffset(int page, int limit) => (page - 1) * limit;
     }
