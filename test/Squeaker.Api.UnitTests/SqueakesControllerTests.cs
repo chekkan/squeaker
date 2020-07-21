@@ -19,12 +19,12 @@ namespace Squeaker.Api.UnitTests
         {
             this.useCaseMock = new Mock<ListSqueakesUseCase>();
             this.sut = new SqueakesController(useCaseMock.Object)
+            {
+                ControllerContext = new ControllerContext
                 {
-                    ControllerContext = new ControllerContext
-                    {
-                        HttpContext = new DefaultHttpContext()
-                    }
-                };
+                    HttpContext = new DefaultHttpContext()
+                }
+            };
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace Squeaker.Api.UnitTests
         private Squeake[] GenerateSqueakes(int count)
         {
             return Enumerable.Range(1, count)
-                .Select(_ => new Squeake{ Id = Guid.NewGuid().ToString()})
+                .Select(_ => new Squeake { Id = Guid.NewGuid().ToString() })
                 .ToArray();
         }
     }
