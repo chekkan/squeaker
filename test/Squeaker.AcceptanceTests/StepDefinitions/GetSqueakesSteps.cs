@@ -69,7 +69,6 @@ namespace Squeaker.AcceptanceTests.StepDefinitions
         [When(@"I GET (.*)")]
         public async Task WhenIRequestPath(string path)
         {
-            // Act
             this.response = await this.client.GetAsync(path);
         }
 
