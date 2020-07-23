@@ -1,16 +1,16 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Squeaker.Api;
 using Squeaker.Application;
 using TechTalk.SpecFlow;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 
 namespace Squeaker.AcceptanceTests.StepDefinitions
 {

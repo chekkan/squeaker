@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +49,7 @@ namespace Squeaker.AcceptanceTests
         {
             dbContext.Squeakes.RemoveRange(dbContext.Squeakes);
             dbContext.SaveChanges();
-            dbContext.Squeakes.AddRange(new []
+            dbContext.Squeakes.AddRange(new[]
             {
                 new Squeake
                 {
