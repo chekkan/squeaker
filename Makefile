@@ -1,5 +1,6 @@
 init:
 	git config core.hooksPath .githooks
+  dotnet restore
 
 test-all: test-u test-a
 
