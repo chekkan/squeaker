@@ -16,7 +16,7 @@ getChangedFiles() {
 	      against=$(git hash-object -t tree /dev/null)
     fi
 
-    echo $(git diff --cached $against --name-only --diff-filter=ACM "*.cs" | sed 's| |\\ |g')
+    echo $(git diff --cached $against --name-only | sed 's| |\\ |g')
 }
 
 formatFiles() {
@@ -28,8 +28,7 @@ formatFiles() {
 }
 
 stageFiles() {
-    echo "$@" |
-        xargs git add
+    echo "$@" | xargs git add
 }
 
 main
